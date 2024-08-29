@@ -59,27 +59,42 @@ public_users.get("/isbn/:isbn", function (req, res) {
 // Get book details based on author
 public_users.get("/author/:author", function (req, res) {
   const author = req.params.author.toLowerCase();
-  const booksAux = Object.values(books).filter(
-    (book) => book.author.toLowerCase() === author
-  );
-  if (booksAux.length > 0) {
-    return res.status(300).send(JSON.stringify(booksAux, null, 4));
-  } else {
-    return res.status(404).json({ message: "No books found by author" });
-  }
+  new Promise((resolve, reject) => {
+    const booksAux = Object.values(books).filter(
+      (book) => book.author.toLowerCase() === author
+    );
+    if (booksAux.length > 0) {
+      resolve(booksAux);
+    } else {
+      reject(new Error("No books found by author"));
+    }
+  })
+    .then((booksAux) => {
+      return res.status(200).send(JSON.stringify(booksAux, null, 4));
+    })
+    .catch((error) => {
+      return res.status(404).json({ message: error.message });
+    });
 });
 // Get all books based on title
 public_users.get("/title/:title", function (req, res) {
   const title = req.params.title.toLowerCase();
-  const booksAux = Object.values(books).filter(
-    (book) => book.title.toLowerCase() === title
-  );
-
-  if (booksAux.length > 0) {
-    return res.status(300).send(JSON.stringify(booksAux, null, 4));
-  } else {
-    return res.status(404).json({ message: "No books found" });
-  }
+  new Promise((resolve, reject) => {
+    const booksAux = Object.values(books).filter(
+      (book) => book.title.toLowerCase() === title
+    );
+    if (booksAux.length > 0) {
+      resolve(booksAux);
+    } else {
+      reject(new Error("No books found"));
+    }
+  })
+    .then((booksAux) => {
+      return res.status(200).send(JSON.stringify(booksAux, null, 4));
+    })
+    .catch((error) => {
+      return res.status(404).json({ message: error.message });
+    });
 });
 
 module.exports = public_users;
